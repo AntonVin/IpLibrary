@@ -14,8 +14,8 @@ namespace IpLibrary
                 new IPAddress(ip).ToString().Split('.').Reverse());
 
         static public uint StringToUint32(string ip) =>
-            (uint)ip.Split('.').
-                Select(int.Parse).
+            ip.Split('.').
+                Select(uint.Parse).
                 Aggregate((x, y) => x << 8 | y);
             //(uint)IPAddress.NetworkToHostOrder(
             // (int)IPAddress.Parse(ip).Address);

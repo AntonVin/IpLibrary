@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Microsoft.VisualStudio.CodeCoverage;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Runtime.Loader;
 using System.Text.RegularExpressions;
@@ -36,6 +37,12 @@ namespace IpLibrary
                 subIp += increment;
             }
             return subNets;
+        }
+         
+        static public bool IsSubnet(NetAddress adr1,NetAddress adr2)
+        {
+            uint mainMask = 1u<<Math.Min(adr1.Prefix, adr2.Prefix);
+            return (adr1.Ip| mainMask) == (adr2.Ip| mainMask);
         }
 
         private uint ExtractIp(string addressIp)
