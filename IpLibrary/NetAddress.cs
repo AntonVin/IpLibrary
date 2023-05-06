@@ -1,9 +1,6 @@
 ﻿using Microsoft.VisualStudio.CodeCoverage;
-using System.Net;
-using System.Net.NetworkInformation;
 using System.Runtime.Loader;
 using System.Text.RegularExpressions;
-using Xunit.Sdk;
 
 namespace IpLibrary
 {
@@ -18,25 +15,30 @@ namespace IpLibrary
             this.Prefix = ExtractPrefix(addressIp);
         }
 
-        public List<string> ToSubNets(int count)
+        /// <summary>
+        /// Делит сеть на подсети.
+        /// </summary>
+        /// <param name="count">Количество подсетей,которое должно быть равно степени двойки</param>
+        /// <returns></returns>
+        public List<string> ToSubтets(int count)
         { 
-            int maxCountSubNets = 1<<(32 - this.Prefix);
-            if (count > maxCountSubNets)
-                throw (new Exception($"Недопустимое количество подсетей.Максимальное число возможных подсетей: {maxCountSubNets}"));
+            int maxCountSubnets = 1<<(32 - this.Prefix);
+            if (count > maxCountSubnets)
+                throw (new Exception($"Недопустимое количество подсетей.Максимальное число возможных подсетей: {maxCountSubnets}"));
             if (Math.Log2(count) % 1 != 0)
                 throw (new Exception($"Недопустимое количество подсетей. Количество подсетей должно быть равно степени двойки(2,4,8,16 и т.п.)"));
 
-            var subNets = new List<string>();
+            var subnets = new List<string>();
             uint subIp = this.Ip;
             int subPrefix = (int)Math.Log2(count) + this.Prefix;
             for(int i = 0; i < count;i++)
             {
-                string subNet = $"{IpConveter.Uint32ToString(subIp)}/{subPrefix}";
-                subNets.Add(subNet);
+                string subnet = $"{IpConveter.Uint32ToString(subIp)}/{subPrefix}";
+                subnets.Add(subnet);
                 uint increment = 1u << (32 - subPrefix);
                 subIp += increment;
             }
-            return subNets;
+            return subnets;
         }
          
         static public bool IsSubnet(NetAddress adr1,NetAddress adr2)
@@ -63,13 +65,12 @@ namespace IpLibrary
 
         private void CheckAddressIp(string addressIp)
         {
-            var reg = new Regex(@"^\d+\.\d+\.\d+\.\d+\/\d+$");
+            var reg = new Regex(@"^(?<ip>\d+\.\d+\.\d+\.\d+)\/(?<prefix>\d+)$");
             if (!reg.IsMatch(addressIp))
                 throw new Exception("Неправильно введённый формат адреса сети");
 
-            int indPrefix = addressIp.IndexOf('/');
-            string ip = addressIp.Substring(0, indPrefix);
-            int prefix = int.Parse(addressIp[(indPrefix + 1)..^0]);
+            string ip = reg.Match(addressIp).Groups["ip"].Value;
+            int prefix = int.Parse(reg.Match(addressIp).Groups["prefix"].Value);
             if (!ip.Split('.').Select(int.Parse).All(x=> x>=0 || x<=255))
                 throw new Exception("Числа в октетах выходят за даипозон 0..255");
             if(prefix<0 || prefix >32 )

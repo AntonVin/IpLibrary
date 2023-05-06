@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace IpLibrary
 {
-    static class IpConveter
+    public static class IpConveter
     {
         static public string Uint32ToString(uint ip) =>
             string.Join('.', 
