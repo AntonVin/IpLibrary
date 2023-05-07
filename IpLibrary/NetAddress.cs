@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.CodeCoverage;
 using System.Runtime.Loader;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace IpLibrary
 {
@@ -10,7 +11,7 @@ namespace IpLibrary
         public uint Ip { get; }
         public NetAddress(string addressIp)
         {
-            CheckAddressIp(addressIp);
+            Check(addressIp);
             this.Ip = ExtractIp(addressIp);
             this.Prefix = ExtractPrefix(addressIp);
         }
@@ -48,8 +49,11 @@ namespace IpLibrary
          
         static public bool IsAffiliation(NetAddress adr1,NetAddress adr2)
         {
-            uint totalMask = 1u<<Math.Min(adr1.Prefix, adr2.Prefix);
-            return (adr1.Ip| totalMask) == (adr2.Ip| totalMask);
+            //Convert.ToUInt32(new string('1', 16).PadRight(32, '0'), 2)
+            int minPrefix = Math.Min(adr1.Prefix, adr2.Prefix);
+            uint totalMask = minPrefix==0?
+                0 : 0b11111111_11111111_11111111_11111111u << (32 - minPrefix);
+            return (adr1.Ip & totalMask) == (adr2.Ip & totalMask);
         }
 
         private uint ExtractIp(string addressIp)
@@ -68,18 +72,18 @@ namespace IpLibrary
             return int.Parse(prefix);
         }
 
-        private void CheckAddressIp(string addressIp)
+        private static void Check(string addressIp)
         {
             var reg = new Regex(@"^(?<ip>\d+\.\d+\.\d+\.\d+)\/(?<prefix>\d+)$");
             if (!reg.IsMatch(addressIp))
-                throw new Exception("Неправильно введённый формат адреса сети");
+                throw new ArgumentException("Некорретный формат");
 
             string ip = reg.Match(addressIp).Groups["ip"].Value;
             int prefix = int.Parse(reg.Match(addressIp).Groups["prefix"].Value);
-            if (!ip.Split('.').Select(int.Parse).All(x=> x>=0 || x<=255))
-                throw new Exception("Числа в октетах выходят за даипозон 0..255");
+            if (!ip.Split('.').Select(int.Parse).All(x=> x>=0 && x<=255))
+                throw new ArgumentException("Числа в октетах выходят за даипозон 0..255");
             if(prefix<0 || prefix >32 )
-                throw new Exception("Префикс выходит за диапозон 0..32");
+                throw new ArgumentException("Префикс выходит за диапозон 0..32");
         }
 
 
