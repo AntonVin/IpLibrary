@@ -38,7 +38,7 @@ namespace IpLibrary.Tests
                 "192.168.0.192/26"
             };
             //Act
-            var actual = new NetAddress("192.168.0.0/24").ToSubNets(4);
+            var actual = new NetAddress("192.168.0.0/24").ToSubnets(4);
             //Assert
             Assert.Equal(expected,actual);
         }

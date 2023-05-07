@@ -15,12 +15,17 @@ namespace IpLibrary
             this.Prefix = ExtractPrefix(addressIp);
         }
 
+        public override string ToString()
+        {
+            return $"{IpConveter.Uint32ToString(this.Ip)}/{this.Prefix}";
+        }
+
         /// <summary>
         /// Делит сеть на подсети.
         /// </summary>
         /// <param name="count">Количество подсетей,которое должно быть равно степени двойки</param>
         /// <returns></returns>
-        public List<string> ToSubтets(int count)
+        public List<string> ToSubnets(int count)
         { 
             int maxCountSubnets = 1<<(32 - this.Prefix);
             if (count > maxCountSubnets)
@@ -41,10 +46,10 @@ namespace IpLibrary
             return subnets;
         }
          
-        static public bool IsSubnet(NetAddress adr1,NetAddress adr2)
+        static public bool IsAffiliation(NetAddress adr1,NetAddress adr2)
         {
-            uint mainMask = 1u<<Math.Min(adr1.Prefix, adr2.Prefix);
-            return (adr1.Ip| mainMask) == (adr2.Ip| mainMask);
+            uint totalMask = 1u<<Math.Min(adr1.Prefix, adr2.Prefix);
+            return (adr1.Ip| totalMask) == (adr2.Ip| totalMask);
         }
 
         private uint ExtractIp(string addressIp)
@@ -77,9 +82,6 @@ namespace IpLibrary
                 throw new Exception("Префикс выходит за диапозон 0..32");
         }
 
-        public override string ToString()
-        {
-            return $"{IpConveter.Uint32ToString(this.Ip)}/{ this.Prefix}";
-        }
+
     }
 }
