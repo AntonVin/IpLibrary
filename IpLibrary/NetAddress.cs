@@ -18,7 +18,8 @@ namespace IpLibrary
 
         public override string ToString()
         {
-            return $"{IpConveter.Uint32ToString(this.Ip)}/{this.Prefix}";
+            string ip = IpConveter.Uint32ToString(this.Ip);
+            return $"{ip}/{this.Prefix}";
         }
 
         /// <summary>
