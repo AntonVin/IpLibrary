@@ -38,11 +38,11 @@ namespace IpLibrary
             var subnets = new List<string>();
             uint subIp = this.Ip;
             int subPrefix = (int)Math.Log2(count) + this.Prefix;
-            for(int i = 0; i < count;i++)
+            uint increment = 1u << (32 - subPrefix);
+            for (int i = 0; i < count;i++)
             {
                 string subnet = $"{IpConveter.Uint32ToString(subIp)}/{subPrefix}";
                 subnets.Add(subnet);
-                uint increment = 1u << (32 - subPrefix);
                 subIp += increment;
             }
             return subnets;
