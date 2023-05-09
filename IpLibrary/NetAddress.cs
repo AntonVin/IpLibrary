@@ -30,9 +30,9 @@ namespace IpLibrary
         { 
             int maxCountSubnets = 1<<(32 - this.Prefix);
             if (count > maxCountSubnets)
-                throw (new Exception($"Недопустимое количество подсетей.Максимальное число возможных подсетей: {maxCountSubnets}"));
+                throw (new ArgumentException($"Недопустимое количество подсетей.Максимальное число возможных подсетей: {maxCountSubnets}"));
             if (Math.Log2(count) % 1 != 0)
-                throw (new Exception($"Недопустимое количество подсетей. Количество подсетей должно быть равно степени двойки(2,4,8,16 и т.п.)"));
+                throw (new ArgumentException($"Недопустимое количество подсетей. Количество подсетей должно быть равно степени двойки(2,4,8,16 и т.п.)"));
 
             var subnets = new List<string>();
             uint subIp = this.Ip;
@@ -46,10 +46,16 @@ namespace IpLibrary
             }
             return subnets;
         }
-         
-        static public bool IsAffiliation(NetAddress adr1,NetAddress adr2)
+        
+        /// <summary>
+        /// Проверка принадлежности сетей. Т.е. является ли сеть adr1 подсетью adr2, и наоборот.
+        /// </summary>
+        /// <param name="adr1"></param>
+        /// <param name="adr2"></param>
+        /// <returns></returns>
+        public static bool IsAffiliation(NetAddress adr1,NetAddress adr2)
         {
-            //Convert.ToUInt32(new string('1', 16).PadRight(32, '0'), 2)
+
             int minPrefix = Math.Min(adr1.Prefix, adr2.Prefix);
             uint totalMask = minPrefix==0?
                 0 : 0b11111111_11111111_11111111_11111111u << (32 - minPrefix);
@@ -72,7 +78,7 @@ namespace IpLibrary
             return int.Parse(prefix);
         }
 
-        private static void Check(string addressIp)
+        private void Check(string addressIp)
         {
             var reg = new Regex(@"^(?<ip>\d+\.\d+\.\d+\.\d+)\/(?<prefix>\d+)$");
             if (!reg.IsMatch(addressIp))
