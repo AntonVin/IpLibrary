@@ -12,8 +12,16 @@ namespace IpLibrary
         public NetAddress(string addressIp)
         {
             Check(addressIp);
-            this.Ip = ExtractIp(addressIp);
             this.Prefix = ExtractPrefix(addressIp);
+            this.Ip = ExtractIp(addressIp);
+            RoundIpByPrefix();
+        }
+
+        private void RoundIpByPrefix()
+        {
+            var mask = this.Prefix == 0 ?
+                            0 : 0b11111111_11111111_11111111_11111111u << (32 - this.Prefix);
+            this.Ip &= mask;
         }
 
         public override string ToString()

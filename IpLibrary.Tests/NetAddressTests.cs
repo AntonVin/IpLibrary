@@ -57,8 +57,7 @@ namespace IpLibrary.Tests
 
         [Theory]
         [InlineData("192.255.0.5/32", 3237937157, 32)]
-        [InlineData("153.122.84.5/0", 2574930949, 0)]
-        [InlineData("255.255.255.0/15", 4294967040, 15)]
+        [InlineData("255.128.0.0/15", 4286578688, 15)]
         [InlineData("0.0.0.0/0", 0u, 0)]
         public void Check_ShouldWork(string address,uint ipNum,int prefix)
         {
